@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kredit kalkulyatoru</title>
+<title>Taksit kartı kalkulyatoru</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#eef2f1;--panel:#fff;--ink:#14282b;--mute:#5d7074;--line:#d3dcda;--abb:#0b5a4d;--bir:#c8102e;--acc:#0b5a4d}
@@ -49,13 +49,12 @@ button.s{background:transparent;color:var(--acc)}
 </head>
 <body>
 <main>
-<h1>Kredit kalkulyatoru</h1>
+<h1>Taksit kartı kalkulyatoru</h1>
 <p class="sub">Məhsulun qiymətini və müddəti seçin, aylıq ödənişi görün</p>
 <section>
-<h2>Məhsul</h2>
+<h2>Qiymət və müddət</h2>
 <div class="grid">
-<div><label for="prod">Məhsul</label><input id="prod" placeholder="Məs: Samsung televizor 55&quot;"></div>
-<div><label for="price">Qiymət (₼)</label><input id="price" type="number" min="0" value="1500" inputmode="decimal"></div>
+<div><label for="price">Qiymət (₼)</label><input id="price" type="number" min="0" inputmode="decimal"></div>
 <div><label for="down">İlkin ödəniş (₼)</label><input id="down" type="number" min="0" value="0" inputmode="decimal"></div>
 <div><label for="term">Müddət (ay)</label>
 <select id="term"><option>3</option><option>6</option><option>9</option><option selected>12</option><option>18</option><option>24</option></select></div>
@@ -70,36 +69,18 @@ button.s{background:transparent;color:var(--acc)}
 </div>
 <p class="note" id="na" hidden>Bu kart üçün seçilən müddət mövcud deyil.</p>
 <div class="scroll" style="margin-top:16px">
-<table><thead id="head"></thead><tbody id="cmp"></tbody></table>
+<table style="min-width:700px"><thead id="head"></thead><tbody id="cmp"></tbody></table>
 </div>
-</section>
-<section>
-<h2>Müştəri məlumatları</h2>
-<div class="grid">
-<div><label for="fn">Soyad, ad, ata adı *</label><input id="fn" autocomplete="name"></div>
-<div><label for="ph">Mobil nömrə *</label><input id="ph" type="tel" placeholder="+994 50 000 00 00" autocomplete="tel"></div>
-<div><label for="fin">FİN kod</label><input id="fin" maxlength="7" style="text-transform:uppercase"></div>
-<div><label for="sn">Şəxsiyyət vəsiqəsinin seriya və nömrəsi</label><input id="sn" placeholder="AZE 12345678"></div>
-<div><label for="bd">Doğum tarixi</label><input id="bd" type="date"></div>
-<div><label for="em">E-poçt</label><input id="em" type="email" autocomplete="email"></div>
-<div><label for="ad">Faktiki ünvan</label><input id="ad" autocomplete="street-address"></div>
-<div><label for="mar">Ailə vəziyyəti</label><select id="mar"><option></option><option>Subay</option><option>Evli</option><option>Boşanmış</option><option>Dul</option></select></div>
-<div><label for="wk">İş yeri</label><input id="wk"></div>
-<div><label for="po">Vəzifə</label><input id="po"></div>
-<div><label for="exp">İş stajı (il)</label><input id="exp" type="number" min="0" step="0.5"></div>
-<div><label for="inc">Aylıq gəlir (₼)</label><input id="inc" type="number" min="0"></div>
-<div><label for="ct">Əlavə əlaqə şəxsi (ad, nömrə)</label><input id="ct"></div>
-</div>
-<label style="display:flex;gap:8px;align-items:flex-start;margin-top:14px;color:var(--ink);font-size:.95rem"><input id="ok" type="checkbox" style="width:auto;margin-top:5px"><span>Məlumatlarımın kredit sorğusu üçün işlənməsinə razıyam</span></label>
-<div class="btns"><button class="p" id="send" type="button">Sorğunu göndər</button></div>
-<div class="msg" id="msg" role="status"></div>
 </section>
 </main>
 <script>
 const $=id=>document.getElementById(id);
 const CARDS=[
- {name:'ABB',c:'var(--abb)',k:{3:8,6:10,9:13,12:16,18:22,24:28}},
- {name:'Birbank Taksit Kartı',c:'var(--bir)',k:{3:7,6:10,12:14,18:16,24:21}}
+ {name:'TamKart',c:'var(--abb)',k:{3:6,6:8,9:10,12:12,18:14,24:17}},
+ {name:'BirKart',c:'var(--bir)',k:{3:7,6:8,9:11,12:13,18:17,24:22}},
+ {name:'BolKart',c:'#7F77DD',k:{3:9,6:12,9:13,12:15,18:19,24:22}},
+ {name:'Ucart',c:'#BA7517',k:{3:9,6:12,9:13,12:15,18:19,24:22}},
+ {name:'LeoKart',c:'#D4537E',k:{3:9,6:12,9:13,12:15,18:19,24:22}}
 ];
 const TERMS=[3,6,9,12,18,24];
 let cur=0;
@@ -110,39 +91,20 @@ function calc(card,n){
  return{base,mon,tot:mon*n+down,over:amt-base};
 }
 function render(){
- const n=+$('term').value,c=calc(CARDS[cur],n);
+ const n=+$('term').value,c=calc(CARDS[cur],n),P=+$('price').value>0;
  $('cards').innerHTML=CARDS.map((x,i)=>`<button type="button" class="bank" data-i="${i}" style="--c:${x.c}" aria-pressed="${i===cur}"><b>${x.name}</b></button>`).join('');
- $('oAmt').textContent=c?fmt(c.base):'—';$('oMon').textContent=c?fmt(c.mon):'—';
- $('oTot').textContent=c?fmt(c.tot):'—';$('oOver').textContent=c?fmt(c.over):'—';
+ $('oAmt').textContent=c&&P?fmt(c.base):'—';$('oMon').textContent=c&&P?fmt(c.mon):'—';
+ $('oTot').textContent=c&&P?fmt(c.tot):'—';$('oOver').textContent=c&&P?fmt(c.over):'—';
  $('na').hidden=!!c;
  $('head').innerHTML='<tr><th>Müddət</th>'+CARDS.map(x=>`<th>${x.name}</th>`).join('')+'<th>Daha sərfəli</th></tr>';
  $('cmp').innerHTML=TERMS.map(t=>{
-  const m=CARDS.map(x=>{const r=calc(x,t);return r?r.mon:null});
+  const m=CARDS.map(x=>{const r=P?calc(x,t):null;return r?r.mon:null});
   const ok=m.filter(v=>v!=null),min=Math.min(...ok);
-  const w=ok.length<2?(ok.length?CARDS[m.indexOf(min)].name:'—'):(m.filter(v=>v===min).length>1?'Eyni':CARDS[m.indexOf(min)].name);
+  const wins=CARDS.filter((x,i)=>m[i]===min).map(x=>x.name),w=ok.length<2?(ok.length?wins[0]:'—'):(wins.length===ok.length?'Eyni':wins.join(', '));
   return `<tr><td>${t} ay</td>`+m.map(v=>`<td class="${v!=null&&v===min&&ok.length>1?'best':''}">${v==null?'—':fmt(v)}</td>`).join('')+`<td>${w}</td></tr>`}).join('');
 }
 $('cards').onclick=e=>{const b=e.target.closest('button');if(b){cur=+b.dataset.i;render()}};
 ['price','down','term'].forEach(i=>$(i).addEventListener('input',render));
-const KEY='405b123e-23a4-4ed2-9d57-38e0d5ee5aed';
-const F={fn:'Soyad, ad, ata adı',ph:'Mobil nömrə',fin:'FİN kod',sn:'Vəsiqənin seriya və nömrəsi',bd:'Doğum tarixi',em:'E-poçt',ad:'Faktiki ünvan',mar:'Ailə vəziyyəti',wk:'İş yeri',po:'Vəzifə',exp:'İş stajı (il)',inc:'Aylıq gəlir (₼)',ct:'Əlavə əlaqə şəxsi'};
-$('send').onclick=async()=>{
- const m=$('msg');
- if(!$('fn').value.trim()||!$('ph').value.trim()){m.textContent='Ad və mobil nömrə mütləq doldurulmalıdır.';return}
- if(!$('ok').checked){m.textContent='Davam etmək üçün razılıq xanasını işarələyin.';return}
- const n=+$('term').value,card=CARDS[cur],c=calc(card,n);
- if(!c){m.textContent='Seçilən kart bu müddət üçün mövcud deyil. Başqa müddət seçin.';return}
- const data={access_key:KEY,subject:'Yeni kredit sorğusu: '+$('fn').value.trim(),from_name:'Kredit sorğusu','Məhsul':$('prod').value||'—','Qiymət':fmt(+$('price').value),'İlkin ödəniş':fmt(+$('down').value),'Kart':card.name,'Müddət':n+' ay','Aylıq ödəniş':fmt(c.mon),'Cəmi ödəniləcək':fmt(c.tot)};
- Object.keys(F).forEach(k=>{data[F[k]]=$(k).value||'—'});
- $('send').disabled=true;m.textContent='Göndərilir…';
- try{
-  const r=await fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)});
-  const j=await r.json();
-  if(j.success){m.textContent='Sorğunuz göndərildi. Tezliklə sizinlə əlaqə saxlanılacaq.';Object.keys(F).forEach(k=>{$(k).value=''});$('ok').checked=false}
-  else{m.textContent='Göndərmək alınmadı. Bir az sonra yenidən cəhd edin.'}
- }catch(e){m.textContent='Göndərmək alınmadı. İnternet bağlantısını yoxlayın.'}
- $('send').disabled=false;
-};
 render();
 </script>
 </body>

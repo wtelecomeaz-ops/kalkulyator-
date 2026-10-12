@@ -57,10 +57,10 @@ button.s{background:transparent;color:var(--acc)}
 <div><label for="price">Qiymət (₼)</label><input id="price" type="number" min="0" inputmode="decimal"></div>
 <div><label for="down">İlkin ödəniş (₼)</label><input id="down" type="number" min="0" value="0" inputmode="decimal"></div>
 <div><label for="term">Müddət (ay)</label>
-<select id="term"><option>3</option><option>6</option><option>9</option><option selected>12</option><option>18</option><option>24</option></select></div>
+<select id="term"><option>2</option><option>3</option><option>6</option><option>9</option><option selected>12</option><option>18</option><option>24</option><option>35</option></select></div>
 </div>
 <h2 style="margin-top:18px">Kart</h2>
-<div class="banks" id="cards" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))"></div>
+<div class="banks" id="cards" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"></div>
 <div class="res">
 <div><small>Kredit məbləği</small><strong id="oAmt">—</strong></div>
 <div><small>Aylıq ödəniş</small><strong id="oMon">—</strong></div>
@@ -69,7 +69,7 @@ button.s{background:transparent;color:var(--acc)}
 </div>
 <p class="note" id="na" hidden>Bu kart üçün seçilən müddət mövcud deyil.</p>
 <div class="scroll" style="margin-top:16px">
-<table style="min-width:700px"><thead id="head"></thead><tbody id="cmp"></tbody></table>
+<table style="min-width:960px"><thead id="head"></thead><tbody id="cmp"></tbody></table>
 </div>
 </section>
 </main>
@@ -80,9 +80,11 @@ const CARDS=[
  {name:'BirKart',c:'var(--bir)',k:{3:7,6:8,9:11,12:13,18:19,24:22}},
  {name:'BolKart',c:'#7F77DD',k:{3:9,6:12,9:13,12:15,18:19,24:22}},
  {name:'Ucart',c:'#BA7517',k:{3:9,6:12,9:13,12:15,18:19,24:22}},
- {name:'LeoKart',c:'#D4537E',k:{3:9,6:12,9:13,12:15,18:19,24:22}}
+ {name:'LeoKart',c:'#D4537E',k:{3:9,6:12,9:13,12:15,18:19,24:22}},
+ {name:'ABB Daxili',c:'#1D9E75',k:{3:8,6:10,9:13,12:15,18:23,24:28}},
+ {name:'BirBank Daxili',c:'#378ADD',k:{2:8,3:9,6:13,12:19,18:27,24:33,35:50}}
 ];
-const TERMS=[3,6,9,12,18,24];
+const TERMS=[2,3,6,9,12,18,24,35];
 let cur=0;
 const fmt=n=>isFinite(n)?n.toLocaleString('az-AZ',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₼':'—';
 function calc(card,n){

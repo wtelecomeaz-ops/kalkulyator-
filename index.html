@@ -45,6 +45,7 @@ button.s{background:transparent;color:var(--acc)}
 .msg{margin-top:10px;color:var(--acc);min-height:1.4em}
 .note{font-size:.82rem;color:var(--mute);margin-top:10px}
 @media print{.noprint{display:none}body{background:#fff;color:#000}}
+.plan{margin:14px 0 0;padding:10px 12px;border-left:4px solid var(--acc);background:var(--bg);border-radius:0 6px 6px 0;font-weight:600}
 </style>
 </head>
 <body>
@@ -62,11 +63,13 @@ button.s{background:transparent;color:var(--acc)}
 <h2 style="margin-top:18px">Kart</h2>
 <div class="banks" id="cards" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"></div>
 <div class="res">
+<div><small>İlkin ödəniş (indi)</small><strong id="oDown">—</strong></div>
 <div><small>Kredit məbləği</small><strong id="oAmt">—</strong></div>
 <div><small>Aylıq ödəniş</small><strong id="oMon">—</strong></div>
 <div><small>Cəmi ödəniləcək</small><strong id="oTot">—</strong></div>
 <div><small>Üstəlik ödəniş</small><strong id="oOver">—</strong></div>
 </div>
+<p class="plan" id="plan" hidden></p>
 <p class="note" id="na" hidden>Bu kart üçün seçilən müddət mövcud deyil.</p>
 <div class="scroll" style="margin-top:16px">
 <table style="min-width:960px"><thead id="head"></thead><tbody id="cmp"></tbody></table>
@@ -97,6 +100,10 @@ function render(){
  $('cards').innerHTML=CARDS.map((x,i)=>`<button type="button" class="bank" data-i="${i}" style="--c:${x.c}" aria-pressed="${i===cur}"><b>${x.name}</b></button>`).join('');
  $('oAmt').textContent=c&&P?fmt(c.base):'—';$('oMon').textContent=c&&P?fmt(c.mon):'—';
  $('oTot').textContent=c&&P?fmt(c.tot):'—';$('oOver').textContent=c&&P?fmt(c.over):'—';
+ const dn=+$('down').value||0,pr=+$('price').value||0;
+ $('oDown').textContent=P?fmt(dn):'—';
+ const pl=$('plan');
+ if(c&&P){pl.hidden=false;pl.textContent=dn>=pr?'İlkin ödəniş qiymətə bərabər və ya çoxdur, kredit lazım deyil.':(dn>0?'İlkin ödəniş '+fmt(dn)+' ödənilir, sonra hər ay '+fmt(c.mon)+' × '+n+' ay.':'Hər ay '+fmt(c.mon)+' × '+n+' ay.')}else pl.hidden=true;
  $('na').hidden=!!c;
  $('head').innerHTML='<tr><th>Müddət</th>'+CARDS.map(x=>`<th>${x.name}</th>`).join('')+'<th>Daha sərfəli</th></tr>';
  $('cmp').innerHTML=TERMS.map(t=>{
